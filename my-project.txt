@@ -1,0 +1,32 @@
+%% My project-To calibrate instruments at scheduled dates
+
+%Get file location and name
+
+dataFolder = 'C:\Users\allisonedward\matlab\udemy_matlab\';
+dataFile   = 'my-project-instrument-data.xlsx';
+
+%Read data from excel file
+
+[numdata , txtdata, rawdata]= xlsread([dataFolder dataFile]);
+
+%Check size and outputs
+whos
+
+%% Extract data
+
+startline = find(strcmpi(rawdata(:,1),'Start Data'))
+
+Type_I = rawdata(startline+1,1)
+
+Name_I = cell2mat(rawdata(startline+2:end,2))
+
+Num_I = length(Name_I)
+
+%% Extract last calibration date and set next service date
+
+M_Date = datetime(rawdata(startline+2:end,4))
+
+for i = 1:length(M_Date)
+    N = dateshift(M_Date(i),'start','year',2)
+end    
+    
