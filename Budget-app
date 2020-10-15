@@ -1,0 +1,103 @@
+class Category:
+  def __init__(self,name):
+    self.ledger = []
+    self.category = name
+    self.balance = 0
+
+  def deposit(self,amount, description):
+    if description == None:
+      return []
+    else:
+      self.balance += amount
+      self.ledger.append({"amount": amount, "description": description})
+  
+  def get_balance(self):
+    return self.balance
+
+  def check_funds(self,amount):
+    if self.balance< amount:
+      return True
+    else:
+      return False
+  
+  def withdraw(self, amount, description = None):
+    if description == None:
+      description = ""
+    if self.check_funds(amount):
+      self.balance -= amount
+      self.ledger.append({"amount":-amount, "description": description})
+      return True
+    else:
+      return False
+  
+  def transfer(self, amount, Cati):
+    if self.withdraw(amount,"Transfer to "+Cati.category):
+      Cati.deposit(amount,"Tranfser from "+self.category)
+      return True
+    else:
+      return False
+  
+  def __str__(self):
+    s = "*" * ((30 - len(self.category))//2) + self.category
+    s += "*" * (30 - len(s)) + "\n"
+    for i in self.ledger:
+      s += i["description"][:23].ljust(23) + str("{:.2f}".format(i["amount"]).rjust(7)) + "\n"
+    s += "Total : " + str(self.balance)
+    return s
+
+def nearest_ten(n):
+  if n<10:
+    return 0
+  else:
+    return round(n/10.0)*10
+
+def create_spend_chart(categories):
+  withdrawals = []
+  max_len_category = 0
+  s = 0
+  for i in categories:
+    withdraw_amount = 0
+    for k in i.ledger:
+      if k["amount"]<0:
+        withdraw_amount += -k["amount"]
+        s+=(-k["amount"])
+    
+    if len(i.category)> max_len_category:
+      max_len_category = len(i.category)
+    withdrawals.append([i.category, withdraw_amount])
+  
+  for i in withdrawals:
+    i.append(nearest_ten(i[1]/s * 100))
+  s = ""
+  s += "Percentage spent by category \n"
+  t = 100
+  while t>= 0:
+    s += str(t).rjust(3) + "|" + "  " 
+  
+  for i in range(len(withdrawals)):
+    if withdrawals[i][2] > 0:
+      s += "o" + "  "
+    else:
+      s += "  "
+  t -= 10
+  s += "\n"
+  
+
+  s += "  " + ("-"*10) + "\n"
+
+  lop = 0
+
+  for i in range(max_len_category):
+    s = " "
+    for j in range(len(withdrawals)):
+      if len(withdrawals[j][0])-1 < lop:
+        s += " "
+      else:
+        s += withdrawals[j][0][lop] + " "
+    lop += 1
+    if i != max_len_category-1:
+      s += "\n"
+    
+  
+  return s
+
